@@ -21,7 +21,7 @@ export const DefaultSidebar = () => (
             </SidebarTrigger>
         </Sidebar.Close>
         { /* START SIDEBAR-OVERLAY: Close (x) */ }
-        
+
         { /* START SIDEBAR: Only for Desktop */ }
         <Sidebar.HideSlim>
             <Sidebar.Section>
@@ -35,7 +35,7 @@ export const DefaultSidebar = () => (
         { /* START SIDEBAR: Only for Mobile */ }
         <Sidebar.MobileFluid>
             <SidebarTopA />
-            
+
             <Sidebar.Section fluid cover>
                 { /* SIDEBAR: Menu */ }
                 <SidebarMiddleNav />

@@ -5,7 +5,7 @@ import {
     InputGroup,
     Button,
     InputGroupAddon
-} from './../../../../components';
+} from './../../../components';
 
 export class CustomSearch extends React.Component {
     static propTypes = {
@@ -54,4 +54,4 @@ export class CustomSearch extends React.Component {
             </InputGroup>
         )
     }
-} 
+}

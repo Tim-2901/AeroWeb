@@ -1,3 +1,3 @@
-import { RecipesTable } from './RecipesTable';
+import { RecipesTableAdvanced } from './RecipesTableAdvanced';
 
-export default RecipesTable
+export default RecipesTableAdvanced

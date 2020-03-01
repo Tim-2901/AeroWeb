@@ -22,7 +22,7 @@ import colors from './../../../colors';
 /*
     CONSTS
 */
-const DATA_URL = "https://api.myjson.com/bins/18oni9";
+const DATA_URL = "http://0.0.0.0:3000/api/devices";
 
 const COUNTRY_CODES = {
     Ireland: "ie",

@@ -1,192 +1,281 @@
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
-import moment from 'moment';
-import _ from 'lodash';
-import faker from 'faker/locale/en_US';
 
 import {
-    Avatar,
-    Badge,
     Button,
     ButtonGroup,
     Row,
     Col
-} from './../../../../components';
+} from './../../../components';
 import { CustomExportCSV } from './CustomExportButton';
-import { CustomSearch } from './CustomSearch';
-import { randomArray, randomAvatar } from './../../../../utilities';
+import _ from "lodash";
 
-const generateRow = (id) => ({
-    id,
-    photo: randomAvatar(),
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    role: faker.name.jobType(),
-    status: randomArray([
-        'Active',
-        'Suspended',
-        'Waiting',
-        'Unknown'
-    ]),
-    region: randomArray(['North', 'South', 'East', 'West']),
-    earnings: 500 + Math.random() * 1000,
-    earningsCurrencyIcon: randomArray([
-        <i className="fa fa-fw fa-euro text-muted" key="cur_eur"></i>,
-        <i className="fa fa-fw fa-dollar text-muted" key="cur_usd"></i>
-    ]),
-    lastLoginDate: faker.date.recent(),
-    ipAddress: faker.internet.ip(),
-    browser: 'Safari 9.1.1(11601.6.17)',
-    os: 'OS X El Capitan',
-    planSelected: randomArray(['Basic', 'Premium', 'Enterprise']),
-    planEnd: faker.date.future()
-});
+
 
 const sortCaret = (order) => {
     if (!order)
-        return <i className="fa fa-fw fa-sort text-muted"></i>;
+        return <i className="fa fa-fw fa-sort text-muted"/>;
     if (order)
-        return <i className={`fa fa-fw text-muted fa-sort-${order}`}></i>
+        return <i className={`fa fa-fw text-muted fa-sort-${order}`}/>
 };
 
-export class AdvancedTableB extends React.Component {
+
+function minutesToDate(minutes) {
+    const date = new Date(1000 * 60 * minutes);
+    return date.toISOString().substr(11, 5);
+
+}
+
+export class RecipesTableAdvanced extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            users: _.times(10, generateRow)
-        }
+            recipes: [],
+            selected: []
+        };
+        console.log("constructed");
+        this.getAPI = this.getAPI.bind(this);
+        this.handleDeleteRow = this.handleDeleteRow.bind(this);
+        this.tableActionButtons = this.tableActionButtons.bind(this);
     }
+
+    handleDeleteRow(id) {
+        this.deleteAPI(id);
+        this.deleteState(id);
+        console.log( 'DELETED ROW ID' + id);
+
+    }
+
+    deleteAPI(id) {
+        const jsonObj = { id: id};
+        fetch('http://debian:3000/api/recipes',
+            {method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonObj),
+            })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                },
+                (error) => {
+                    console.log(error)
+                }
+            );
+
+    }
+
+    deleteState(id) {
+        this.setState({
+            recipes: _.filter(this.state.recipes, recipe =>
+                !_.includes({id: id}, recipe.id))
+        });
+    }
+
+    getAPI() {
+        fetch('http://debian:3000/api/recipes')
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        recipes: result
+                    });
+                    console.log(result)
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
+    }
+
+    componentDidMount() {
+        this.getAPI()
+    }
+
+    tableActionButtons(cell ,row) {
+        return(
+            <div>
+                <Button className="btn-table-action"
+                >
+                    <i className="material-icons edit">edit</i>
+                </Button>
+                <Button className="btn-table-action"
+                        onClick={() => {this.handleDeleteRow(row.id)}}
+                >
+                    <i className="material-icons delete">close</i>
+                </Button>
+            </div>
+        )
+    }
+
+
+
 
     handleAddRow() {
-        const usersLength = this.state.users.length;
 
-        this.setState({
-            users: [
-                generateRow(usersLength + 1),
-                ...this.state.users
-            ]
-        })
     }
 
-    createColumnDefinitions() {
-        return [
-            {
-                dataField: 'photo',
-                text: 'Photo',
-                formatter: (cell) => (
-                    <Avatar.Image src={ cell } />
-                )
-            }, {
-                dataField: 'firstName',
-                text: 'First Name',
-                sort: true,
-                sortCaret
-            }, {
-                dataField: 'lastName',
-                text: 'Last Name',
-                sort: true,
-                sortCaret
-            }, {
-                dataField: 'role',
-                text: 'Role',
-                sort: true,
-                sortCaret
-            }, {
-                dataField: 'status',
-                text: 'Status',
-                sort: true,
-                sortCaret,
-                formatter: (cell) => {
-                    const color = (status) => {
-                        const map = {
-                            'Active': 'success',
-                            'Suspended': 'danger',
-                            'Waiting': 'info',
-                            'Unknown': 'secondary'
-                        };
-                        return map[status];
-                    }
 
-                    return (
-                        <Badge color={ color(cell) }>
-                            { cell }
-                        </Badge>
-                    );
-                }
-            }, {
-                dataField: 'region',
-                text: 'Region',
-                sort: true,
-                sortCaret
-            }, {
-                dataField: 'earnings',
-                text: 'Earnings',
-                sort: true,
-                sortCaret,
-                formatter: (cell, row) => (
-                    <span>
-                        { row.earningsCurrencyIcon }
-                        { _.isNumber(cell) && cell.toFixed(2) }
-                    </span>
-                )
+
+    handleEditRow() {
+
+    }
+
+
+    columns = [
+        {
+            dataField: 'id',
+            text: 'ID'
+        }, {
+            dataField: 'name',
+            text: 'Name',
+            sort: true,
+            sortCaret
+        }, {
+            dataField: 'plant',
+            text: 'Plant',
+            sort: true,
+            sortCaret
+        }, {
+            dataField: 'daytime',
+            text: 'Day Cycle',
+            sort: true,
+            sortCaret,
+            formatter(cell) {
+                return minutesToDate(cell);
             }
-        ]; 
-    }
+        }, {
+            dataField: 'temperature_day',
+            text: 'Temperature',
+            sort: true,
+            sortCaret
+        }, {
+            dataField: 'light_intensity',
+            text: 'Light',
+            sort: true,
+            sortCaret,
+        }, {
+            dataField: 'water_flowrate',
+            text: 'Watering',
+            sort: true,
+            sortCaret
+        }, {
+            dataField: 'ventilation_rpm',
+            text: 'Ventilation',
+            sort: true,
+            sortCaret,
+        }, {
+            dataField: 'co2_concentration',
+            text: 'CO2',
+            sort: true,
+            sortCaret,
+        }, {
+            dataField: 'actions',
+            isDummyField: 'true',
+            headerClasses: "bt-0",
+            formatter: this.tableActionButtons.bind(this),
+
+
+        }];
 
     render() {
-        const columnDefs = this.createColumnDefinitions();
 
         const expandRow = {
             renderer: row => (
                 <Row>
-                    <Col md={ 6 }>
+                    <Col>
+                    </Col>
+                    <Col>
+                    </Col>
+                    <Col >
                         <dl className="row">
-                            <dt className="col-sm-6 text-right">Last Login</dt>
-                            <dd className="col-sm-6">{ moment(row.lastLoginDate).format('DD-MMM-YYYY') }</dd>
+                            <dt className="col-sm-6 text-right">On</dt>
+                            <dd className="col-sm-6">{ minutesToDate(row.daytime_start) }</dd>
 
-                            <dt className="col-sm-6 text-right">IP Address</dt>
-                            <dd className="col-sm-6">{ row.ipAddress }</dd>
-
-                            <dt className="col-sm-6 text-right">Browser</dt>
-                            <dd className="col-sm-6">{ row.browser }</dd>
+                            <dt className="col-sm-6 text-right">Off</dt>
+                            <dd className="col-sm-6">{ minutesToDate((row.daytime + row.daytime_start) % 1440)}</dd>
                         </dl>
                     </Col>
-                    <Col md={ 6 }>
+                    <Col >
                         <dl className="row">
-                            <dt className="col-sm-6 text-right">Operating System</dt>
-                            <dd className="col-sm-6">{ row.os }</dd>
+                            <dt className="col-sm-6 text-right">Day</dt>
+                            <dd className="col-sm-6">{ row.temperature_day }</dd>
 
-                            <dt className="col-sm-6 text-right">Selected Plan</dt>
-                            <dd className="col-sm-6">{ row.planSelected }</dd>
-
-                            <dt className="col-sm-6 text-right">Plan Expiriation</dt>
-                            <dd className="col-sm-6">{ moment(row.planEnd).format('DD-MMM-YYYY') }</dd>
+                            <dt className="col-sm-6 text-right">Night</dt>
+                            <dd className="col-sm-6">{ row.temperature_night }</dd>
                         </dl>
+                    </Col>
+                    <Col >
+                        <dl className="row">
+                            <dt className="col-sm-6 text-right">400 nm</dt>
+                            <dd className="col-sm-6">{ row.light_wavelength400500 }</dd>
+
+                            <dt className="col-sm-6 text-right">500 nm</dt>
+                            <dd className="col-sm-6">{ row.light_wavelength500600 }</dd>
+
+                            <dt className="col-sm-6 text-right">600 nm</dt>
+                            <dd className="col-sm-6">{ row.light_wavelength600700 }</dd>
+
+                            <dt className="col-sm-6 text-right">700 nm</dt>
+                            <dd className="col-sm-6">{ row.light_wavelength700800 }</dd>
+                        </dl>
+                    </Col>
+                    <Col >
+                        <dl className="row">
+                            <dt className="col-sm-6 text-right">Pressure</dt>
+                            <dd className="col-sm-6">{ row.water_pressure }</dd>
+
+                            <dt className="col-sm-6 text-right">Interval</dt>
+                            <dd className="col-sm-6">{ row.water_interval }</dd>
+
+                            <dt className="col-sm-6 text-right">Cycletime</dt>
+                            <dd className="col-sm-6">{ row.water_cycletime }</dd>
+
+                            <dt className="col-sm-6 text-right">pH</dt>
+                            <dd className="col-sm-6">{ row.water_ph }</dd>
+
+                            <dt className="col-sm-6 text-right">Nozzle</dt>
+                            <dd className="col-sm-6">{ row.water_nozzle }</dd>
+                        </dl>
+                    </Col>
+                    <Col >
+                        <dl className="row">
+                            <dt className="col-sm-6 text-right">Interval</dt>
+                            <dd className="col-sm-6">{ row.ventilation_interval }</dd>
+
+                            <dt className="col-sm-6 text-right">Cycletime</dt>
+                            <dd className="col-sm-6">{ row.ventilation_cycletime }</dd>
+
+                            <dt className="col-sm-6 text-right">Daytime Only</dt>
+                            <dd className="col-sm-6">{ row.ventilation_daytimeonly }</dd>
+                        </dl>
+                    </Col>
+                    <Col >
                     </Col>
                 </Row>
             ),
             showExpandColumn: true,
             expandHeaderColumnRenderer: ({ isAnyExpands }) => isAnyExpands ? (
-                    <i className="fa fa-angle-down fa-fw fa-lg text-muted"></i>
-                ) : (
-                    <i className="fa fa-angle-right fa-fw fa-lg text-muted"></i>
-                ),
+                <i className="fa fa-angle-down fa-fw fa-lg text-muted"/>
+            ) : (
+                <i className="fa fa-angle-right fa-fw fa-lg text-muted"/>
+            ),
             expandColumnRenderer: ({ expanded }) =>
                 expanded ? (
-                    <i className="fa fa-angle-down fa-fw fa-lg text-muted"></i>
+                    <i className="fa fa-angle-down fa-fw fa-lg text-muted"/>
                 ) : (
-                    <i className="fa fa-angle-right fa-fw fa-lg text-muted"></i>
+                    <i className="fa fa-angle-right fa-fw fa-lg text-muted"/>
                 )
-        }
+        };
 
         return (
             <ToolkitProvider
                 keyField="id"
-                data={ this.state.users }
-                columns={ columnDefs }
-                search
+                data={ this.state.recipes }
+                columns={ this.columns }
                 exportCSV
             >
             {
@@ -194,13 +283,10 @@ export class AdvancedTableB extends React.Component {
                     <React.Fragment>
                         <div className="d-flex justify-content-end align-items-center mb-2">
                             <h6 className="my-0">
-                                AdvancedTable B
+                                 Recipes
                             </h6>
                             <div className="d-flex ml-auto">
-                                <CustomSearch
-                                    className="mr-2"
-                                    { ...props.searchProps }
-                                />
+
                                 <ButtonGroup>
                                     <CustomExportCSV
                                         { ...props.csvProps }
@@ -209,10 +295,8 @@ export class AdvancedTableB extends React.Component {
                                     </CustomExportCSV>
                                     <Button
                                         size="sm"
-                                        outline
-                                        onClick={ this.handleAddRow.bind(this) }
                                     >
-                                        Add <i className="fa fa-fw fa-plus"></i>
+                                        Add
                                     </Button>
                                 </ButtonGroup>
                             </div>

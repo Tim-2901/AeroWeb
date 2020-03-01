@@ -4,7 +4,6 @@ import ToolkitProvider, { Search, CSVExport} from 'react-bootstrap-table2-toolki
 import { Container, Row, Col, Button, Card, CardBody, CardHeader } from 'reactstrap';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
-import { MdClose, MdEdit } from 'react-icons/md';
 
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
@@ -12,27 +11,34 @@ const { ExportCSVButton } = CSVExport;
 const columns = [{
     dataField: 'id',
     text: 'ID',
+    headerClasses: "bt-0",
     sort: true,
+
 }, {
     dataField: 'name',
     text: 'Name',
+    headerClasses: "bt-0",
     sort: true,
     filter: textFilter()
 }, {
     dataField: 'plant',
     text: 'Plant',
+    headerClasses: "bt-0",
     sort: true,
     filter: textFilter()
 }, {
     dataField: 'pressure',
     text: 'Pressure',
+    headerClasses: "bt-0",
 }, {
     dataField: 'daytime',
     text: 'Daytime',
+    headerClasses: "bt-0",
 }, {
     dataField: 'actions',
     isDummyField: 'true',
-    formatter: (row) => {
+    headerClasses: "bt-0",
+    formatter: () => {
         return(
             <div>
                 <Button className="btn-table-action"><i className="material-icons edit">edit</i></Button>
@@ -87,24 +93,17 @@ export class RecipesTable extends React.Component {
                             <Row>
                                 <Col>
                                     <Card>
-                                        <CardHeader className="bg-primary"><h5 className="text-white">Recipes</h5></CardHeader>
                                         <CardBody>
-                                            <Row>
-                                                <ExportCSVButton  { ...props.csvProps } >Export</ExportCSVButton>
-                                                <SearchBar { ...props.searchProps} >Search</SearchBar>
-                                            </Row>
-                                            <BootstrapTable
-                                                headerWrapperClasses="thead-light"
-                                                bordered={ false }
-                                                hover
-                                                {...props.baseProps}
-                                                filter={ filterFactory() }
-                                            />
-                                            <Button><MdClose color="red" /></Button>
-                                            <Button className="btn-table-action"><MdEdit color="blue" /></Button>
-                                            <Button btn><i className="material-icons">edit</i></Button>
-
+                                            <h5 className="card-title">Recipes<span className="small ml-1 text-muted">#1.01</span></h5>
                                         </CardBody>
+                                        <BootstrapTable
+                                            headerClasses="bt-0"
+                                            bordered={ false }
+                                            hover
+                                            {...props.baseProps}
+                                            filter={ filterFactory() }
+                                        />
+                                        <Button btn><i className="material-icons">edit</i></Button>
                                     </Card>
                                 </Col>
                             </Row>

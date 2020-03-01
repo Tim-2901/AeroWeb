@@ -10,6 +10,7 @@ import {
 
 import './../styles/bootstrap.scss';
 import './../styles/main.scss';
+import './../styles/custom.scss';
 import './../styles/plugins/plugins.scss';
 import './../styles/plugins/plugins.css';
 
@@ -34,7 +35,7 @@ class AppLayout extends React.Component {
 
     render() {
         const { children } = this.props;
-        
+
         return (
             <ThemeProvider initialStyle="light" initialColor="primary">
                 <Layout sidebarSlim favIcons={ favIcons }>

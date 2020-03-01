@@ -32,18 +32,18 @@ const SidebarBottomB = () => (
                                         size="md"
                                         src={ randomAvatar() }
                                         addOns={[
-                                            <AvatarAddOn.Icon 
+                                            <AvatarAddOn.Icon
                                                 className="fa fa-circle"
                                                 color="white"
                                                 key="avatar-icon-bg"
                                             />,
-                                            <AvatarAddOn.Icon 
+                                            <AvatarAddOn.Icon
                                                 className="fa fa-circle"
                                                 color="success"
                                                 key="avatar-icon-fg"
                                             />
                                         ]}
-                                    /> 
+                                    />
                                 </Media>
                                 <Media body>
                                     <span className="mt-0 d-flex h6 mb-1 text-truncate">
@@ -68,18 +68,18 @@ const SidebarBottomB = () => (
                                 size="sm"
                                 src={ randomAvatar() }
                                 addOns={[
-                                    <AvatarAddOn.Icon 
+                                    <AvatarAddOn.Icon
                                         className="fa fa-circle"
                                         color="white"
                                         key="avatar-icon-bg"
                                     />,
-                                    <AvatarAddOn.Icon 
+                                    <AvatarAddOn.Icon
                                         className="fa fa-circle"
                                         color="success"
                                         key="avatar-icon-fg"
                                     />
                                 ]}
-                            /> 
+                            />
                         </DropdownToggle>
                         <DropdownProfile />
                     </UncontrolledButtonDropdown>
